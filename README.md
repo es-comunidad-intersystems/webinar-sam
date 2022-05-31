@@ -18,13 +18,51 @@ SAM es extensible y permite:
 El componente SAM se instala en forma de un docker-compose (disponible en wrc.intersystems.com) que arranca los varios componentes docker.
 
 ## ¿Qué necesitas?
-* Docker y docker-compose - para arrancar el componente SAM
+* Docker y docker-compose - para arrancar el componente SAM, preferiblemente desde un shell de Linux/Unix
 * un browser - para acceder a los cuadros de mando
 
-## Instalación
+## Instalación y Arranque
 
-El repositorio git contiene todos los componentes necesarios para arrancar SAM
+El repositorio git contiene todos los componentes necesarios para arrancar SAM.
+1- clonear el repositorio
 
-### Clonear el repositorio
+```
+git clone <this repository>
+```
 
-### Preparación
+2- cambiar permisos del sub-directorio config/prometheus
+
+```
+chmod 777 ./sam-1.1.0.107-unix/config/prometheus
+```
+
+3- Arrancar SAM 
+* En unix/linux, se pueden usar los scripts start.sh y stop.sh ubicados en .\sam-1.1.0.107-unix\
+Es necesario permitir la ejecución de los scripts:
+
+```
+chmod +x *.sh
+```
+
+Los Componentes de SAM arrancan con esta notificación:
+```
+Creating sam_iris_1 ... done
+Creating sam_prometheus_1 ... done
+Creating sam_alertmanager_1 ... done
+Creating sam_grafana_1      ... done
+Creating sam_nginx_1        ... done
+```
+
+* en Windows, aunque sea una configuración no soportada, es posible arrancar SAM con los comandos siguientes:
+
+```
+.\sam-1.1.0.107-unix\docker-compose -p sam up 
+or, for background:
+.\sam-1.1.0.107-unix\docker-compose -p sam up -d
+```
+En este caso de Windows, se tiene que hacer click en acceptar en la ventana de compartir ficheros entre el host y docker.
+
+4- Cambio de contraseña
+
+
+
