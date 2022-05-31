@@ -64,5 +64,15 @@ En este caso de Windows, se tiene que hacer click en acceptar en la ventana de c
 
 4- Cambio de contraseña
 
+Como primera tarea es imprescindible cambiar la contraseña del usuario Administrador (Admin o Superuser) de la instancia de IRIS incluida en SAM haciendo un primer login en el portal de gestión:
 
+```
+ http://127.0.0.1:8080/csp/sys/UtilHome.csp
+```
+SAM esta ahora accesible en la URL:
 
+```
+ http://127.0.0.1:8080/api/sam/app/index.csp
+```
+
+## Monitorizar un cluster
