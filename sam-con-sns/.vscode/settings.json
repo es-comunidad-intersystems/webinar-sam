@@ -1,0 +1,7 @@
+{
+    "objectscript.conn": {
+        "server": "iris-sam",
+        "ns": "SAM",
+        "active": true
+    }
+}
