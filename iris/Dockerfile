@@ -21,8 +21,11 @@ COPY --chown=$ISC_PACKAGE_MGRUSER:$ISC_PACKAGE_IRISGROUP src /app/src
 # test files for HL7 production
 COPY --chown=$ISC_PACKAGE_MGRUSER:$ISC_PACKAGE_IRISGROUP test /test
 
+#For Python Metric
+RUN pip3 install --target /usr/irissys/mgr/python psutil
+
 SHELL ["/irissession.sh"]
-RUN ECHO "Force Restart Here"
+
 
 RUN \
   #Change some config values

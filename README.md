@@ -38,11 +38,13 @@ chmod 777 ./sam-1.1.0.107-unix/config/prometheus
 ```
 
 3- Arrancar SAM 
+
 * En unix/linux, se pueden usar los scripts start.sh y stop.sh ubicados en .\sam-1.1.0.107-unix\
 Es necesario permitir la ejecución de los scripts:
 
 ```
 chmod +x *.sh
+start.sh
 ```
 
 Los Componentes de SAM arrancan con esta notificación:
@@ -62,6 +64,10 @@ o, para background:
 .\sam-1.1.0.107-unix\docker-compose -p sam up -d
 ```
 En este caso de Windows, se tiene que hacer click en acceptar en la ventana de compartir ficheros entre el host y docker.
+
+Nota: con la versión má reciente de docker, si el contenedor de iris no arranca (y `docker logs sam-110107-unix_iris_1` muestra errores), puede ser necesario modificar el docker-compose.yaml para añadir el comando siguiente al contenedor de iris: 
+
+`command: --check-caps false`
 
 4- Cambio de contraseña
 
@@ -96,7 +102,7 @@ Cada instancia de IRIS proporciona 2 puntos de acceso REST a los cuales se acced
 
 Ahora se puede mirar el contenido de cada endpoint desde un browser:
 
-Metricas: `http://host.docker.internal:9191/api/monitor/metric`
+Metricas: `http://host.docker.internal:9191/api/monitor/metrics`
 
 Alertas: `http://host.docker.internal:9191/api/monitor/alerts`
 
@@ -116,9 +122,43 @@ Ahora, se puede añadir cada instancia irisA e irisB con el botón "New". Despu�
 
 ### Definir unas Reglas de Alertas para el Cluster
 
-SAM recoje automaticamente las alertas generadas por las instancias de IRIS.
+SAM recoje automaticamente las alertas generadas en el alerts.log por las instancias de IRIS. Adicionalmente, se pueden generar alertas sobre valores de metricas en promQL. Estas reglas son comunes a todas las instancias de un cluster.
 
-Más ejemplos de Alertas en 
+Se añade esta regla de Alerta al Cluster definido:
+
+```
+Name: GloRefs>50000
+Alert Severity: Warning
+Alert Expression:  iris_glo_ref_per_sec{cluster="IrisDev-Cluster"} > 50000
+
+Alert message: Alto Valor de Global References por segundo
+```
+
+Y para generar la condición de alerta, se puede ejecutar este codigo en la instancia, desde el webterminal:
+
+```
+USER> for i=1:1:9000000 set ^MyTest(i)="" write:(i#100000=0) i," "
+```
+
+Al poco tiempo, SAM genera una alerta.
+
+#### Otros ejemplos de alerta:
+
+Aquí otros ejemplos de alertas generadas en PromQL:
+
+```
+# Greater than 80 percent of InterSystems IRIS licenses are in use:
+iris_license_percent_used{cluster="production"}>80
+
+# There are less than 5 active InterSystems IRIS processes:
+iris_process_count{cluster="test"}<5
+
+# The disk storing the MYDATA database is over 75% full:
+iris_disk_percent_full{cluster="test",id="MYDATA"}>75
+
+# Same as above, but specifying directory instead of database name:
+iris_disk_percent_full{cluster="production",dir="/IRIS/mgr/MYDATA"}>75
+```
 
 
 
@@ -131,7 +171,7 @@ Las metricas de SAM generadas por las instancias de IRIS se pueden extender faci
 3. **Añadir Privilegios** a la Aplicación Web /api/monitor para ejecutar código en el namespace correcto.
 4. Registrar la nueva metrica con `AddApplicationClass(<clase>,<Namespace>)`
 
-#### Ejemplo de Metrica en Python
+#### Ejemplo de Metrica (implementada en Python)
 
 ​	Este ejemplo esta pre-cargado en irisA:
 
@@ -170,6 +210,27 @@ set sc=##class(SYS.Monitor.SAM.Config).AddApplicationClass("SAMDemo.PythonMetric
 http://localhost:9191/api/monitor/metrics
 ```
 
+```
+SAMDemo_batterypercent 100
+SAMDemo_batterysecsleft -1
+```
+
+#### Ejemplo alternativo en ObjecScript
+
+```
+/// Example of a custom class for the /metric API
+Class SAMDemo.RandomMetric Extends %SYS.Monitor.SAM.Abstract
+{
+Parameter PRODUCT = "SAMDemo";
+/// Collect metrics from the specified sensors
+Method GetSensors() As %Status
+{
+   do ..SetSensor("MyRandomCounter",$Increment(^MyRandomCounter,$random(20)-5))
+   return $$$OK
+}
+}
+```
+
 
 
 ### Metricas de Estadisticas de SQL
@@ -196,10 +257,35 @@ Visualization:
 
 * Graph: Lines
 
-Ahora, desde el WebTermina, Ejecutar el siguiente codigo.
+Otra Metrica: Total de peticiones SQL por segundo
+
+```
+iris_sql_queries_per_second{id="all"}
+```
 
 
 
 ### Metricas de Interoperabilidad
 
-InterSystems IRIS 2021 y siguientes permiten la colección de estadicticas de las producciones de Interoperabilidad 
+InterSystems IRIS 2021 y siguientes permiten la colección de estadicticas de las producciones de Interoperabilidad:
+
+```
+zn "USER" 
+do ##class(Ens.Util.Statistics).DisableSAMIncludeProdLabel()
+do ##class(Ens.Util.Statistics).EnableSAMForNamespace(,1)
+```
+
+Se puede ver despues metricas de cada componente de interoperabilidad en el na
+
+#### Metrica Customizada para Interoperabilidad
+
+Otra posibilidad es definir metricas a medida para ciertos elementos de interoperabilidad.
+
+Un ejemplo de ello es `Demo.Metrics.Pharma`. Esta metrica hace un simple recuento de las prescipciones que se procesan en la producción h7
+
+- Como las otras metricas a medida, se tiene que activar con el código:
+
+```
+zn "%SYS"
+write ##class(SYS.Monitor.SAM.Config).AddApplicationClass("Demo.Metrics.Pharma", "USER")
+```
