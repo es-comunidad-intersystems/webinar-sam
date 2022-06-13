@@ -91,7 +91,9 @@ Las instancias estan disponibles en los puertos:
 ## Metricas Disponibles
 
 Cada instancia de IRIS proporciona 2 puntos de acceso REST a los cuales se acceden desde SAM. Ahora de puede mirar el contenido de cada endpoint desde un browser:
+
 Metricas: `http://host.docker.internal:9191/api/sam/metric`
+
 Alertas: `http://host.docker.internal:9191/api/sam/alerts`
 
 ## Monitorizar un cluster
@@ -100,5 +102,5 @@ SAM agrupa los servidores a monitorizar en "Clusters". Las condiciones de alerta
 
 En el portal de SAM, seleccionar "Create your first Cluster", añadir un nombre "IrisDev-Cluster" y una descripción antes de validar con el botón "Add Cluster".
 
-Ahora, se puede añadir cada instancia irisA e irisB con el botón "New".
+Ahora, se puede añadir cada instancia irisA e irisB con el botón "New". Despues de unos segundos, ls instancias debe aparecer como "Accesibles" y "OK".
 
