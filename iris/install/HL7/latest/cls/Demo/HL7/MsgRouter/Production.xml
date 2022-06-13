@@ -129,6 +129,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">151</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/out/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>
@@ -193,6 +194,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">149</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/out/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>
@@ -209,6 +211,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">148</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/out/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>
@@ -225,6 +228,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">155</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/out/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>

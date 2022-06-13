@@ -124,6 +124,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">131</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/in/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>
@@ -188,6 +189,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">131</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/in/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>
@@ -204,7 +206,7 @@ To demonstrate alerts, give EMailAlertOperation a valid STMP server and Recipien
     <Setting Target="Host" Name="AlertOnError">1</Setting>
     <Setting Target="Host" Name="ArchiveIO">0</Setting>
     <Setting Target="Host" Name="Framing">AsciiLF</Setting>
-    <Setting Target="Host" Name="ThrottleDelay">150</Setting>
+    <Setting Target="Host" Name="ThrottleDelay">131</Setting>
     <Setting Target="Adapter" Name="FilePath">/test/in/</Setting>
     <Setting Target="Adapter" Name="Overwrite">0</Setting>
     <Setting Target="Adapter" Name="Charset">Default</Setting>

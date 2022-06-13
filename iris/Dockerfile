@@ -22,6 +22,7 @@ COPY --chown=$ISC_PACKAGE_MGRUSER:$ISC_PACKAGE_IRISGROUP src /app/src
 COPY --chown=$ISC_PACKAGE_MGRUSER:$ISC_PACKAGE_IRISGROUP test /test
 
 SHELL ["/irissession.sh"]
+RUN ECHO "Force Restart Here"
 
 RUN \
   #Change some config values
@@ -42,7 +43,8 @@ RUN \
   do $system.OBJ.Load("/app/install/Loan/latest/csp/app/DemoLoanForm.csp", "ck") \
   do $system.OBJ.Load("/app/install/Loan/latest/csp/app/DemoLoanSubmit.csp", "ck") \ 
   # load src code
-  do $system.OBJ.LoadDir("/app/src", "ck", ,1) \
+  do $system.OBJ.LoadDir("/app/src", "fck", ,1) \
+  do ##class(%Library.Routine).CompileList("SLEEP.MAC") \
   # auto-start production
   do ##class(Ens.Director).SetAutoStart("Demo.HL7.MsgRouter.Production") \ 
   set sc = 1

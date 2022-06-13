@@ -6,6 +6,7 @@
 ## Introducción
 SAM o "System Alerting and Monitoring" es la infrastructura de Intersystems para la monitorización de instancias de Intersystems IRIS. Basado en las herramientas open-source Prometheus y Grafana, SAM permite agrupar en un cluster multiples instancias de IRIS locales o remotas a monitorizar como una sola entidad. Grafana proporciona Dashboards pre-construidos y extensibles, y Prometheus permite añadir reglas y gestionar alertas con su componente AlertManager.
 La Monitorización esta compuesta de 2 partes:
+
 * Cada InterSystems IRIS 2020.1(o más reciente) incluye 2 APIs que exponen Metricas y Alertas
 * El componente SAM se connecta a los sistemas monitorizados y proporciona cuadros de mandos y gestiona alertas
 
@@ -46,8 +47,8 @@ chmod +x *.sh
 
 Los Componentes de SAM arrancan con esta notificación:
 ```
-Creating sam_iris_1 ... done
-Creating sam_prometheus_1 ... done
+Creating sam_iris_1 ...         done
+Creating sam_prometheus_1 ...   done
 Creating sam_alertmanager_1 ... done
 Creating sam_grafana_1      ... done
 Creating sam_nginx_1        ... done
@@ -57,7 +58,7 @@ Creating sam_nginx_1        ... done
 
 ```
 .\sam-1.1.0.107-unix\docker-compose -p sam up 
-or, for background:
+o, para background:
 .\sam-1.1.0.107-unix\docker-compose -p sam up -d
 ```
 En este caso de Windows, se tiene que hacer click en acceptar en la ventana de compartir ficheros entre el host y docker.
@@ -78,6 +79,7 @@ SAM esta ahora accesible en la URL:
 
 Este repositorio git viene con 2 instancias IRIS que se pueden arrancar para después monitorizarlas con SAM.
 Para arrancar las instancias
+
 ```
 cd iris
 docker-compose up -d
@@ -90,17 +92,114 @@ Las instancias estan disponibles en los puertos:
 
 ## Metricas Disponibles
 
-Cada instancia de IRIS proporciona 2 puntos de acceso REST a los cuales se acceden desde SAM. Ahora de puede mirar el contenido de cada endpoint desde un browser:
+Cada instancia de IRIS proporciona 2 puntos de acceso REST a los cuales se acceden desde SAM. 
 
-Metricas: `http://host.docker.internal:9191/api/sam/metric`
+Ahora se puede mirar el contenido de cada endpoint desde un browser:
 
-Alertas: `http://host.docker.internal:9191/api/sam/alerts`
+Metricas: `http://host.docker.internal:9191/api/monitor/metric`
+
+Alertas: `http://host.docker.internal:9191/api/monitor/alerts`
+
+
 
 ## Monitorizar un cluster
 
-SAM agrupa los servidores a monitorizar en "Clusters". Las condiciones de alertas se definen a nivel del cluster y aplicacn a todas las instancias del cluster. Por esto es frecuente definir cluster de "producción", clusters de "desarrollo/test"..
+SAM agrupa los servidores a monitorizar en "Clusters". Las condiciones de alertas se definen a nivel del cluster y aplican a todas las instancias del cluster. Por esto es frecuente definir cluster de "producción", clusters de "desarrollo/test"..
 
-En el portal de SAM, seleccionar "Create your first Cluster", añadir un nombre "IrisDev-Cluster" y una descripción antes de validar con el botón "Add Cluster".
+Acceder al portal de SAM: http://localhost:8080/api/sam/app/index.csp
 
-Ahora, se puede añadir cada instancia irisA e irisB con el botón "New". Despues de unos segundos, ls instancias debe aparecer como "Accesibles" y "OK".
+En el portal de SAM, seleccionar "Create your first Cluster", añadir un nombre `IrisDev-Cluster` y una descripción antes de validar con el botón "Add Cluster".
 
+Ahora, se puede añadir cada instancia irisA e irisB con el botón "New". Después de unos segundos, las instancias deben aparecer como "Accesibles" y "OK".
+
+
+
+### Definir unas Reglas de Alertas para el Cluster
+
+SAM recoje automaticamente las alertas generadas por las instancias de IRIS.
+
+Más ejemplos de Alertas en 
+
+
+
+### Metricas a Medida 
+
+Las metricas de SAM generadas por las instancias de IRIS se pueden extender facilmente:
+
+1. Subclase de %SYS.Monitor.SAM.Abstract
+2. Metodo GetSensors() par el calculo de las metricas
+3. **Añadir Privilegios** a la Aplicación Web /api/monitor para ejecutar código en el namespace correcto.
+4. Registrar la nueva metrica con `AddApplicationClass(<clase>,<Namespace>)`
+
+#### Ejemplo de Metrica en Python
+
+​	Este ejemplo esta pre-cargado en irisA:
+
+```
+Class SAMDemo.PythonMetric Extends %SYS.Monitor.SAM.Abstract
+{
+Parameter PRODUCT = "SAMDemo";
+Method GetSensors() As %Status [ Language = python ]
+{
+import psutil
+self.SetSensor("batterypercent",psutil.sensors_battery().percent)
+if (psutil.sensors_battery().power_plugged==True):
+        self.SetSensor("batterysecsleft",-1)
+else:
+        self.SetSensor("batteryminutesleft",psutil.sensors_battery().secsleft//60)
+}
+}
+```
+
+​	Se puede activar con un WebTerminal:
+
+```
+http://localhost:9191/terminal/
+```
+
+​	Y los comandos
+
+```
+zn "%SYS"
+set sc=##class(SYS.Monitor.SAM.Config).AddApplicationClass("SAMDemo.PythonMetric","USER")
+```
+
+​	Después, se puede validar que la metrica aparece en la lista
+
+```
+http://localhost:9191/api/monitor/metrics
+```
+
+
+
+### Metricas de Estadisticas de SQL
+
+InterSystems IRIS 2021 y siguientes generan automaticamente metricas del motor SQL, a nivel de cada namespace y en agregado:
+
+```
+iris_sql_queries_avg_runtime{id="all"}
+iris_sql_queries_avg_runtime_std_dev{id="all"}
+iris_sql_queries_per_second{id="all"}
+```
+
+A continuación se añade un elemento de Dashboard basado en el "Average SQL Query Time". 
+
+En SAM, ver el Dashboard en Grafana y editarlo para añadir:
+
+SAM Collector: 
+
+	* Metrics: iris_sql_queries_avg_runtime
+	* Legend: SQLAvgQryTime_{{id}}
+	* Format: Time series
+
+Visualization: 
+
+* Graph: Lines
+
+Ahora, desde el WebTermina, Ejecutar el siguiente codigo.
+
+
+
+### Metricas de Interoperabilidad
+
+InterSystems IRIS 2021 y siguientes permiten la colección de estadicticas de las producciones de Interoperabilidad 
