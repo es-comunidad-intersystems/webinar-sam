@@ -74,5 +74,33 @@ SAM esta ahora accesible en la URL:
 ```
  http://127.0.0.1:8080/api/sam/app/index.csp
 ```
+## Preparación de la Demo
+
+Este repositorio git viene con 2 instancias IRIS que se pueden arrancar para después monitorizarlas con SAM.
+Para arrancar las instancias
+```
+cd iris
+docker-compose up -d
+```
+Las instancias estan disponibles en los puertos:
+
+|   irisA                                |   irisB                                     |
+| -------------------------------------- | ------------------------------------------- |
+|   http://host.docker.internal:9191     |   http://host.docker.internal:9291          |
+
+## Metricas Disponibles
+
+Cada instancia de IRIS proporciona 2 puntos de acceso REST a los cuales se acceden desde SAM. Ahora de puede mirar el contenido de cada endpoint desde un browser:
+
+Metricas: `http://host.docker.internal:9191/api/sam/metric`
+
+Alertas: `http://host.docker.internal:9191/api/sam/alerts`
 
 ## Monitorizar un cluster
+
+SAM agrupa los servidores a monitorizar en "Clusters". Las condiciones de alertas se definen a nivel del cluster y aplicacn a todas las instancias del cluster. Por esto es frecuente definir cluster de "producción", clusters de "desarrollo/test"..
+
+En el portal de SAM, seleccionar "Create your first Cluster", añadir un nombre "IrisDev-Cluster" y una descripción antes de validar con el botón "Add Cluster".
+
+Ahora, se puede añadir cada instancia irisA e irisB con el botón "New". Despues de unos segundos, ls instancias debe aparecer como "Accesibles" y "OK".
+
