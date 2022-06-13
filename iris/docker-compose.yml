@@ -1,0 +1,29 @@
+version: "2.2"
+services:
+  
+  iris-a:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iris-a
+    #image: webinar-sam:iris
+    ports:
+      - 9191:52773
+      - 9192:1972
+    command: --check-caps false 
+    #volumes:
+    #  - ./variables: /variables
+    env_file:
+      - variables.env
+  iris-b:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iris-b
+    #image: webinar-sam:iris
+    ports:
+      - 9291:52773
+      - 9292:1972
+    command: --check-caps false
+
+
